@@ -41,4 +41,9 @@ group :development, :test do
 
   # Test suite for Ruby [est suite for Ruby [URL_ADDRESSpec.info/]
   gem "rspec-rails", "~> 6.1"
+
+  # Documentations.
+  gem "rswag-api"
+  gem "rswag-ui"
+  gem "rswag-specs"
 end

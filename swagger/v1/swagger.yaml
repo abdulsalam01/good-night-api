@@ -1,0 +1,104 @@
+openapi: 3.0.1
+info:
+  title: Sleep Tracker API
+  version: v1
+paths:
+  /users/{user_id}/clock_ins:
+    post:
+      tags:
+        - Clock-ins Sleep
+      summary: Create a clock-in sleep record
+      parameters:
+        - name: user_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                duration:
+                  type: integer
+      responses:
+        '201':
+          description: Clock-in created
+    get:
+      tags:
+        - Get Clock-ins Sleep
+      summary: Get a paginated list of user's clock-ins
+      parameters:
+        - name: user_id
+          in: path
+          required: true
+          schema:
+            type: integer
+        - name: cursor
+          in: query
+          required: false
+          schema:
+            type: string
+      responses:
+        '200':
+          description: List of sleep records
+
+  /users/{id}/feed:
+    get: 
+      tags:
+        - Get Feed Sleep
+      summary: Get feed of followed users' sleep records
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+        - name: cursor
+          in: query
+          required: false
+          schema:
+            type: string
+      responses:
+        '200':
+          description: List of followed sleep records
+
+  /users/{id}/follow/{followed_id}:
+    post:
+      tags:
+        - Follow User
+      summary: Follow another user
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+        - name: followed_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '201':
+          description: Follow relationship created
+    delete:
+      tags:
+        - Unfollow User
+      summary: Unfollow a user
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+        - name: followed_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: Follow relationship deleted

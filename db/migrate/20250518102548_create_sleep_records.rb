@@ -9,5 +9,6 @@ class CreateSleepRecords < ActiveRecord::Migration[7.2]
 
     # Index for quickly querying a user's sleep records by creation time (newest first).
     add_index :sleep_records, [ :user_id, :created_at ]
+    add_index :sleep_records, [ :duration, :id ]
   end
 end

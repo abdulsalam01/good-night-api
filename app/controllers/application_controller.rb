@@ -1,6 +1,7 @@
 class ApplicationController < ActionController::API
   rescue_from ActiveRecord::RecordNotFound, with: :render_not_found
   PAGE_SIZE = 5
+  FEED_PAGE_SIZE = 10
 
   private
 

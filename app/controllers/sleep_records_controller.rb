@@ -41,29 +41,55 @@ class SleepRecordsController < ApplicationController
   # GET /users/:id/feed
   def friends_feed
     user = User.find(params[:id])
-    # IDs of users that the current user is following.
-    followed_ids = user.followed_users.pluck(:id)
+    cursor = params[:cursor].to_i if params[:cursor].present?
 
-    # Get sleep records from followed users in the past 7 days, ordered by duration (desc).
-    recent_records = SleepRecord.includes(:user)
-                                .where(user_id: followed_ids)
-                                .where("created_at >= ?", 7.days.ago)
-                                .order(duration: :desc)
+    # Step 1: Cache key includes user ID and cursor for pagination.
+    cache_key = "feed/#{user.id}/#{cursor || 'first'}"
 
-    # Use in-memory caching for the feed results to improve performance.
-    cache_key = "feed-#{user.id}"
-    feed_results = Rails.cache.fetch(cache_key, expires_in: 5.minutes) do
-      # Build an array of sleep records with user info for the feed.
-      recent_records.map do |rec|
-        {
-          user_id: rec.user_id,
-          user_name: rec.user.name,
-          duration: rec.duration,
-          clocked_in_at: rec.created_at
-        }
+    feed_data = Rails.cache.fetch(cache_key, expires_in: 5.minutes) do
+      # Step 2: Get followed user IDs.
+      followed_ids = user.followed_users.pluck(:id)
+
+      # Step 3: Build base query.
+      query = SleepRecord
+        .includes(:user)
+        .where(user_id: followed_ids)
+        .where("created_at >= ?", 7.days.ago)
+        .order(duration: :desc, id: :desc) # Add ID for tie-breaker.
+
+      # Step 4: Apply cursor if present.
+      if cursor.present?
+        last_record = SleepRecord.find_by(id: cursor)
+        if last_record
+          query = query.where(
+            "duration < ? OR (duration = ? AND id < ?)",
+            last_record.duration, last_record.duration, last_record.id
+          )
+        end
       end
+
+      # Step 5: Limit results for pagination.
+      records = query.limit(FEED_PAGE_SIZE).to_a
+
+      # Step 6: Format results and include next_cursor.
+      {
+        records: records.map { |rec| serialize_feed_record(rec) },
+        next_cursor: records.size == FEED_PAGE_SIZE ? records.last.id : nil
+      }
     end
 
-    render json: { feed: feed_results }
+    render json: feed_data
+  end
+
+  private
+
+  def serialize_feed_record(record)
+    {
+      id: record.id,
+      user_id: record.user_id,
+      user_name: record.user.name,
+      duration: record.duration,
+      clocked_in_at: record.created_at
+    }
   end
 end

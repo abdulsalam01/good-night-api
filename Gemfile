@@ -40,5 +40,5 @@ group :development, :test do
   gem "rubocop-rails-omakase", require: false
 
   # Test suite for Ruby [est suite for Ruby [URL_ADDRESSpec.info/]
-  gem "rspec-rails", "~> 5.0"
+  gem "rspec-rails", "~> 6.1"
 end

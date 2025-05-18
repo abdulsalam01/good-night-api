@@ -46,35 +46,38 @@ bundle exec rspec
 
 ## API Endpoints
 
-### Clock-in
+| Method | Endpoint                                  | Description                           | Example Response                                  |
+| ------ | ----------------------------------------- | ------------------------------------- | ------------------------------------------------- |
+| POST   | `/users/:user_id/clock_ins`               | Create a sleep record for a user      | `{ "clock_ins": [{ "id": 1, "duration": 480 }] }` |
+| GET    | `/users/:user_id/clock_ins?cursor=abc123` | Get paginated sleep records           | `{ "clock_ins": [...], "next_cursor": "xyz456" }` |
+| POST   | `/users/:id/follow/:followed_id`          | Follow another user                   | `{ "follower_id": 1, "followed_id": 2 }`          |
+| DELETE | `/users/:id/follow/:followed_id`          | Unfollow a user                       | (No content - 204)                                |
+| GET    | `/users/:id/feed?cursor=abc123`           | Get sleep records from followed users | `{ "records": [...], "next_cursor": "xyz456" }`   |
+| GET    | `/api-docs`                               | Access Swagger UI                     | Swagger UI page                                   |
 
-* **POST** `/users/:user_id/clock_ins`
+### 📘 Example Feed Response
 
-  * Body: `{ "duration": 480 }`
-  * Creates a sleep record for a user
-* **GET** `/users/:user_id/clock_ins?cursor=<optional_cursor>`
-
-  * Returns user's sleep records ordered by created\_at DESC with cursor pagination
-
-### Follow
-
-* **POST** `/users/:id/follow/:followed_id`
-
-  * Makes user `id` follow user `followed_id`
-
-### Unfollow
-
-* **DELETE** `/users/:id/follow/:followed_id`
-
-  * Removes the follow relationship
-
-### Feed
-
-* **GET** `/users/:id/feed?cursor=<optional_cursor>`
-
-  * Returns all sleep records from users that the given user follows
-  * Ordered by `created_at DESC`
-  * Uses per-user memory cache
+```json
+{
+  "records": [
+    {
+      "id": 4,
+      "user_id": 3,
+      "user_name": "Charlie",
+      "duration": 480,
+      "clocked_in_at": "2025-05-18T10:48:56.537Z"
+    },
+    {
+      "id": 3,
+      "user_id": 2,
+      "user_name": "Bob",
+      "duration": 360,
+      "clocked_in_at": "2025-05-18T10:48:52.743Z"
+    }
+  ],
+  "next_cursor": null
+}
+```
 
 ---
 

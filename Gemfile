@@ -38,6 +38,7 @@ group :development, :test do
 
   # Omakase Ruby styling [https://github.com/rails/rubocop-rails-omakase/]
   gem "rubocop-rails-omakase", require: false
+
+  # Test suite for Ruby [est suite for Ruby [URL_ADDRESSpec.info/]
+  gem "rspec-rails", "~> 5.0"
 end
-
-

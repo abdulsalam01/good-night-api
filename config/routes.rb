@@ -6,5 +6,14 @@ Rails.application.routes.draw do
   get "up" => "rails/health#show", as: :rails_health_check
 
   # Defines the root path route ("/")
-  # root "posts#index"
+  resources :users, only: [] do
+    resources :clock_ins, only: [ :index, :create ], controller: "sleep_records"
+
+    # Follow/Unfollow routes (using member routes with follower's user id in URL).
+    member do
+      post "follow/:followed_id" => "follows#create"
+      delete "follow/:followed_id" => "follows#destroy"
+      get "feed" => "sleep_records#friends_feed"
+    end
+  end
 end

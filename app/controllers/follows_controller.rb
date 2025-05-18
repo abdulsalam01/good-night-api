@@ -21,6 +21,14 @@ class FollowsController < ApplicationController
     follow = Follow.find_by!(follower: follower, followed: followed)
 
     follow.destroy
+    expire_feed_cache(follower.id)
     head :no_content  # 204 No Content on successful deletion.
+  end
+
+  private
+
+  def expire_feed_cache(user_id)
+    # Invalidate first page (you can add more granular keys if needed)
+    Rails.cache.delete("feed/#{user_id}/first")
   end
 end

@@ -40,7 +40,7 @@ group :development, :test do
   gem "rubocop-rails-omakase", require: false
 
   # Test suite for Ruby [est suite for Ruby [URL_ADDRESSpec.info/]
-  gem "rspec-rails", "~> 6.1"
+  gem "rspec-rails", "~> 8.0"
 
   # Documentations.
   gem "rswag-api"
